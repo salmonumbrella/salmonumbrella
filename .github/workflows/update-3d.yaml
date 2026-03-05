@@ -1,5 +1,8 @@
 name: Update 3D profile
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: '0 16 * * *'
