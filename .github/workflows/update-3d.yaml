@@ -1,0 +1,31 @@
+name: Update 3D profile
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate 3D contribution profile
+        uses: yoshi389111/github-profile-3d-contrib@0.7.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.repository_owner }}
+          SETTING_JSON: ./3d-profile-settings.json
+
+      - name: Move SVG to root
+        run: |
+          mv ./profile-3d-contrib/profile-3d.svg ./profile-3d.svg
+          rm -rf ./profile-3d-contrib
+
+      - name: Commit and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add profile-3d.svg
+          git diff --cached --quiet || (git commit -m "Update 3D profile" && git push)
